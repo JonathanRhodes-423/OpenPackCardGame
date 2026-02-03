@@ -39,12 +39,7 @@ public class PackOpener : MonoBehaviour
             // 1. ADD TO PLAYER INVENTORY
             storeManager.playerInventory.AddCard(data.cardID);
 
-            // 2. UPDATE GLOBAL MARKET DATA
-            // We decrement the unopened count so the Global Market 
-            // knows there is one less card 'on the shelf'.
-            data.unopenedInPacks--;
-
-            // 3. ANIMATION & INDEX
+            // 2. ANIMATION & INDEX
             revealSlot.transform.localScale = Vector3.zero;
             LeanTween.scale(revealSlot.gameObject, new Vector3(30f, 30f, 1f), 0.3f).setEaseOutBack();
 

@@ -17,17 +17,19 @@ public class CardData : ScriptableObject
     public string launchDateString;
     public int productionMonths;
     public int totalPrintRun;
-    public int unopenedInPacks;
+
+    [HideInInspector]
+    public int unopenedInPacks
+    {
+        get
+        {
+            if (Warehouse.Instance != null)
+                return Warehouse.Instance.GetUnopenedCount(this);
+            return 0;
+        }
+    }
 
     [HideInInspector] public float currentMarketValue;
-
-    public void InitializeSupply()
-    {
-        // The system calculates the 'Unopened' pool based on the 2026 timeline
-        // Total Prints - (Natural production based on time)
-        int naturallyProduced = GetCurrentSupply();
-        unopenedInPacks = totalPrintRun - naturallyProduced;
-    }
 
     public DateTime LaunchDate
     {
@@ -54,4 +56,5 @@ public class CardData : ScriptableObject
     {
         return totalPrintRun - unopenedInPacks;
     }
+
 }

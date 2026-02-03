@@ -24,14 +24,23 @@ public class StoreManager : MonoBehaviour
     private StoreCardSlot selectedPlayerCard;
     private StoreCardSlot selectedStoreCard;
 
+    // StoreManager.cs
     void Start()
     {
-        UpdateMoneyUI(); //
+        UpdateMoneyUI();
         if (marketManager != null && marketManager.allCards.Count > 0)
         {
-            marketManager.UpdateMarketPrices(); //
-            // Initial seed for Day 1
-            ReceiveSundayShipment();
+            marketManager.UpdateMarketPrices();
+
+            // Use a small delay or check if the buffer is actually ready
+            if (Warehouse.Instance != null)
+            {
+                ReceiveSundayShipment();
+            }
+            else
+            {
+                Debug.LogError("StoreManager: Warehouse Instance is missing!");
+            }
         }
     }
 

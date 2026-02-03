@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 04ed7c82d5429f644a04f248f4ac9151, type: 3}
+  m_Name: ArcanusTheUnflinching_Basic
+  m_EditorClassIdentifier: Assembly-CSharp::CardData
+  cardID: arcanus_base_010126
+  cardName: Arcanus The Unflinching
+  artwork: {fileID: 21300000, guid: a401046563d525d459480605a2845993, type: 3}
+  rarity: 4
+  baseValue: 50
+  launchDateString: 2026-01-01
+  productionMonths: 3
+  totalPrintRun: 5000
+  unopenedInPacks: 0
+  currentMarketValue: 51.573647

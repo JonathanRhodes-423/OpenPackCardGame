@@ -34,11 +34,23 @@ public class StoreCardSlot : MonoBehaviour
 
     public void SetupPack(CardPack pack, StoreManager manager)
     {
-        cardData = null; // Clear card data if it's a pack
+        cardData = null;
         packName = pack.packName;
         storeManager = manager;
-        artworkImage.sprite = pack.packArt;
-        priceText.text = $"${pack.cost:N0}";
+
+        if (artworkImage != null)
+        {
+            artworkImage.sprite = pack.packArt;
+        }
+        else
+        {
+            Debug.LogError($"StoreCardSlot on {gameObject.name} is missing its 'artworkImage' reference!");
+        }
+
+        if (priceText != null)
+        {
+            priceText.text = $"${pack.cost:N0}";
+        }
     }
 
     public void OnSlotClicked()

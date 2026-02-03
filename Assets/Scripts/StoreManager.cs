@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 using TMPro;
+using UnityEngine.UI;
 
 public class StoreManager : MonoBehaviour
 {
@@ -23,6 +24,16 @@ public class StoreManager : MonoBehaviour
 
     private StoreCardSlot selectedPlayerCard;
     private StoreCardSlot selectedStoreCard;
+
+    [Header("Confirmation UI")]
+    public GameObject openCardPanel; // Your existing panel
+    public StoreCardSlot previewSlot; // The large slot in the panel
+    public Button confirmBuyButton;
+    public Button confirmTradeButton;
+    public Button cancelButton;
+
+    private CardData pendingCard;
+    private CardPack pendingPack;
 
     // StoreManager.cs
     void Start()
@@ -86,17 +97,89 @@ public class StoreManager : MonoBehaviour
     {
         if (uiController == null) uiController = Object.FindAnyObjectByType<StorefrontUIController>();
 
-        // Robust check: Is this slot a child of the Store Grid?
         bool isStoreSlot = slot.transform.IsChildOf(uiController.storeGridParent);
 
-        if (!string.IsNullOrEmpty(slot.packName))
+        if (isStoreSlot)
         {
-            HandlePackInteraction(slot, isStoreSlot);
+            ShowStoreConfirmation(slot);
         }
         else
         {
-            HandleSingleInteraction(slot, isStoreSlot);
+            // Player inventory behavior remains the same (selecting for trade or opening packs)
+            if (!string.IsNullOrEmpty(slot.packName))
+            {
+                CardPack pack = uiController.availablePacks.Find(p => p.packName == slot.packName);
+                if (pack != null) OpenPack(pack);
+            }
+            else
+            {
+                selectedPlayerCard = slot;
+                Debug.Log($"Selected Player Card for Trade: {slot.cardData.cardName}");
+            }
         }
+    }
+
+    private void ShowStoreConfirmation(StoreCardSlot slot)
+    {
+        openCardPanel.SetActive(true); // Open the preview panel
+        previewSlot.transform.localScale = new Vector3(30f, 30f, 1f); // Set large preview scale
+
+        if (cancelButton != null) cancelButton.gameObject.SetActive(true); // Ensure Cancel is always available
+
+        if (!string.IsNullOrEmpty(slot.packName))
+        {
+            // --- PACK SELECTED ---
+            pendingPack = uiController.availablePacks.Find(p => p.packName == slot.packName);
+            pendingCard = null;
+            previewSlot.SetupPack(pendingPack, this);
+
+            confirmBuyButton.gameObject.SetActive(true);
+
+            // HIDE TRADE BUTTON: Packs cannot be traded
+            if (confirmTradeButton != null) confirmTradeButton.gameObject.SetActive(false);
+        }
+        else
+        {
+            // --- CARD SELECTED ---
+            pendingCard = slot.cardData;
+            pendingPack = null;
+            selectedStoreCard = slot;
+            previewSlot.Setup(pendingCard, GetStoreSellPrice(pendingCard), this);
+
+            confirmBuyButton.gameObject.SetActive(true);
+
+            // SHOW TRADE BUTTON: Individual cards can be traded
+            if (confirmTradeButton != null) confirmTradeButton.gameObject.SetActive(true);
+        }
+    }
+
+    public void OnConfirmBuy()
+    {
+        if (pendingPack != null) PurchasePack(pendingPack);
+        else if (pendingCard != null) PurchaseSingle(pendingCard);
+
+        CloseConfirmation();
+    }
+
+    public void OnConfirmTrade()
+    {
+        if (pendingCard != null && selectedPlayerCard != null)
+        {
+            ExecuteTrade();
+        }
+        else if (selectedPlayerCard == null)
+        {
+            Debug.LogWarning("Please select a card from your inventory first to trade!");
+        }
+
+        CloseConfirmation();
+    }
+
+    public void CloseConfirmation()
+    {
+        openCardPanel.SetActive(false);
+        pendingCard = null;
+        pendingPack = null;
     }
 
     private void HandlePackInteraction(StoreCardSlot slot, bool isStoreSlot)

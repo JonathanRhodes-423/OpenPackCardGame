@@ -23,6 +23,10 @@ public class PackOpener : MonoBehaviour
             return;
         }
 
+        if (storeManager.confirmBuyButton != null) storeManager.confirmBuyButton.gameObject.SetActive(false);
+        if (storeManager.confirmTradeButton != null) storeManager.confirmTradeButton.gameObject.SetActive(false);
+        if (storeManager.cancelButton != null) storeManager.cancelButton.gameObject.SetActive(false);
+
         currentIndex = 0;
         revealOverlay.SetActive(true);
         ShowNextCard();

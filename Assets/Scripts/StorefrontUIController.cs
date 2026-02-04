@@ -18,7 +18,7 @@ public class StorefrontUIController : MonoBehaviour
     public TextMeshProUGUI dateDisplay;
 
     [Header("Pagination Settings")]
-    public int slotsPerPage = 16; // Strictly enforced 4x4
+    public int slotsPerPage = 16;
 
     [Header("Player Page Buttons")]
     public Button playerNextButton;
@@ -37,16 +37,22 @@ public class StorefrontUIController : MonoBehaviour
     public StoreManager storeManager;
     public MarketManager marketManager;
 
+    // These methods should be called by your Tab Buttons in the Inspector
     public void SetViewToSingles() { currentStorePage = 0; currentView = StoreView.Singles; RefreshUI(); }
     public void SetViewToPacks() { currentStorePage = 0; currentView = StoreView.Packs; RefreshUI(); }
-    public void SetPlayerViewToSingles() { currentPlayerPage = 0; currentPlayerView = PlayerView.Singles; RefreshUI(); }
+    public void SetPlayerViewToSingles()
+    {
+        storeManager.ClearTradeCart(); // Clear when changing view type
+        currentPlayerPage = 0;
+        currentPlayerView = PlayerView.Singles;
+        RefreshUI();
+    }
     public void SetPlayerViewToPacks() { currentPlayerPage = 0; currentPlayerView = PlayerView.Packs; RefreshUI(); }
 
     void Start()
     {
         if (storeManager != null) storeManager.uiController = this;
 
-        // Initialize Listeners
         if (playerNextButton != null) playerNextButton.onClick.AddListener(() => { currentPlayerPage++; RefreshUI(); });
         if (playerPrevButton != null) playerPrevButton.onClick.AddListener(() => { currentPlayerPage--; RefreshUI(); });
         if (storeNextButton != null) storeNextButton.onClick.AddListener(() => { currentStorePage++; RefreshUI(); });
@@ -78,22 +84,29 @@ public class StorefrontUIController : MonoBehaviour
         foreach (Transform child in storeGridParent) Destroy(child.gameObject);
 
         // --- RENDER PLAYER SIDE ---
-        List<string> playerItems = FlattenInventory(storeManager.playerInventory, currentPlayerView == PlayerView.Singles);
+        List<string> playerItems = FlattenInventory(storeManager.playerInventory, currentPlayerView == PlayerView.Singles, true);
         RenderGridPage(playerItems, playerGridParent, false, currentPlayerPage, playerNextButton, playerPrevButton);
 
         // --- RENDER STORE SIDE ---
-        List<string> storeItems = FlattenInventory(storeManager.storeInventory, currentView == StoreView.Singles);
+        List<string> storeItems = FlattenInventory(storeManager.storeInventory, currentView == StoreView.Singles, false);
         RenderGridPage(storeItems, storeGridParent, true, currentStorePage, storeNextButton, storePrevButton);
     }
 
-    private List<string> FlattenInventory(CardInventory inventory, bool isSingles)
+    private List<string> FlattenInventory(CardInventory inventory, bool isSingles, bool isPlayer)
     {
         List<string> list = new List<string>();
-        var targetDict = isSingles ? inventory.contents : inventory.packContents;
-
-        foreach (var entry in targetDict)
+        if (isSingles)
         {
-            for (int i = 0; i < entry.Value; i++) list.Add(entry.Key);
+            if (isPlayer)
+                foreach (var inst in inventory.cardInstances) list.Add(inst.instanceID);
+            else
+                foreach (var entry in inventory.contents)
+                    for (int i = 0; i < entry.Value; i++) list.Add(entry.Key);
+        }
+        else
+        {
+            foreach (var entry in inventory.packContents)
+                for (int i = 0; i < entry.Value; i++) list.Add(entry.Key);
         }
         return list;
     }
@@ -105,9 +118,9 @@ public class StorefrontUIController : MonoBehaviour
 
         for (int i = startIdx; i < endIdx; i++)
         {
-            bool isActuallySingles = isStoreSide ? (currentView == StoreView.Singles) : (currentPlayerView == PlayerView.Singles);
+            bool drawingSingles = isStoreSide ? (currentView == StoreView.Singles) : (currentPlayerView == PlayerView.Singles);
 
-            if (isActuallySingles)
+            if (drawingSingles)
             {
                 CreateSingleCardSlot(items[i], grid, isStoreSide);
             }
@@ -122,18 +135,36 @@ public class StorefrontUIController : MonoBehaviour
             }
         }
 
-        // Handle Button Visibility
         if (nextBtn != null) nextBtn.gameObject.SetActive((pageNum + 1) * slotsPerPage < items.Count);
         if (prevBtn != null) prevBtn.gameObject.SetActive(pageNum > 0);
     }
 
-    void CreateSingleCardSlot(string cardID, Transform parent, bool isStore)
+    void CreateSingleCardSlot(string idOrUid, Transform parent, bool isStore)
     {
-        CardData data = marketManager.allCards.Find(c => c.cardID == cardID);
+        CardData data = null;
+        string finalUid = "";
+
+        if (isStore)
+        {
+            data = marketManager.allCards.Find(c => c.cardID == idOrUid);
+        }
+        else
+        {
+            CardInstance inst = storeManager.playerInventory.cardInstances.Find(c => c.instanceID == idOrUid);
+            if (inst != null) { data = inst.masterData; finalUid = inst.instanceID; }
+        }
+
         if (data == null) return;
 
         GameObject go = Instantiate(cardSlotPrefab, parent);
+        StoreCardSlot slot = go.GetComponent<StoreCardSlot>();
         float price = isStore ? storeManager.GetStoreSellPrice(data) : storeManager.GetStoreBuyPrice(data);
-        go.GetComponent<StoreCardSlot>().Setup(data, price, storeManager);
+        slot.Setup(data, price, storeManager);
+
+        if (!isStore)
+        {
+            slot.instanceID = finalUid;
+            if (storeManager.tradeCartIDs.Contains(finalUid)) slot.SetSelectionActive(true);
+        }
     }
 }

@@ -8,28 +8,24 @@ public class StoreCardSlot : MonoBehaviour
     public Image artworkImage; // Drag the Button's Image component here
     public TextMeshProUGUI priceText; // Drag your TMP object here
 
+    [Header("Selection UI")]
+    public GameObject selectionBorder;
+
     [Header("Runtime Data")]
     public CardData cardData;
-    public string packName; // Add this line to fix the reference error
+    public string packName;
+    public string instanceID; // NEW: The fingerprint of the card
     private StoreManager storeManager;
 
-    // This is called by the StorefrontUIController loop
     public void Setup(CardData data, float price, StoreManager manager)
     {
         cardData = data;
         packName = "";
         storeManager = manager;
+        instanceID = ""; // Reset for non-player cards
 
-        if (artworkImage != null && data.artwork != null)
-        {
-            artworkImage.sprite = data.artwork;
-        }
-
-        // This check prevents the NullReferenceException
-        if (priceText != null)
-        {
-            priceText.text = $"${price:N0}";
-        }
+        if (artworkImage != null) artworkImage.sprite = data.artwork;
+        if (priceText != null) priceText.text = $"${price:N0}";
     }
 
     public void SetupPack(CardPack pack, StoreManager manager)
@@ -56,5 +52,11 @@ public class StoreCardSlot : MonoBehaviour
     public void OnSlotClicked()
     {
         storeManager.HandleCardSelection(this);
+    }
+
+    public void SetSelectionActive(bool isActive)
+    {
+        if (selectionBorder != null)
+            selectionBorder.SetActive(isActive);
     }
 }

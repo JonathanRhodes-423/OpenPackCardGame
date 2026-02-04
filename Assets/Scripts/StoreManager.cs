@@ -31,6 +31,7 @@ public class StoreManager : MonoBehaviour
     public Button confirmBuyButton;
     public Button confirmTradeButton;
     public Button cancelButton;
+    public Button confirmSellButton;
 
     private CardData pendingCard;
     private CardPack pendingPack;
@@ -113,10 +114,29 @@ public class StoreManager : MonoBehaviour
             }
             else
             {
-                selectedPlayerCard = slot;
-                Debug.Log($"Selected Player Card for Trade: {slot.cardData.cardName}");
+                ShowPlayerCardConfirmation(slot);
             }
         }
+    }
+
+    private void ShowPlayerCardConfirmation(StoreCardSlot slot)
+    {
+        openCardPanel.SetActive(true);
+        previewSlot.transform.localScale = new Vector3(30f, 30f, 1f);
+
+        pendingCard = slot.cardData;
+        pendingPack = null;
+        selectedPlayerCard = slot;
+
+        // Use the Store's Buy Price (Markdown value)
+        float sellPrice = GetStoreBuyPrice(pendingCard);
+        previewSlot.Setup(pendingCard, sellPrice, this);
+
+        // Toggle Buttons
+        confirmBuyButton.gameObject.SetActive(false);
+        confirmTradeButton.gameObject.SetActive(true);
+        confirmSellButton.gameObject.SetActive(true); // Show Sell
+        cancelButton.gameObject.SetActive(true);
     }
 
     private void ShowStoreConfirmation(StoreCardSlot slot)
@@ -125,6 +145,7 @@ public class StoreManager : MonoBehaviour
         previewSlot.transform.localScale = new Vector3(30f, 30f, 1f); // Set large preview scale
 
         if (cancelButton != null) cancelButton.gameObject.SetActive(true); // Ensure Cancel is always available
+        confirmSellButton.gameObject.SetActive(false);
 
         if (!string.IsNullOrEmpty(slot.packName))
         {
@@ -158,6 +179,23 @@ public class StoreManager : MonoBehaviour
         if (pendingPack != null) PurchasePack(pendingPack);
         else if (pendingCard != null) PurchaseSingle(pendingCard);
 
+        CloseConfirmation();
+    }
+
+    public void OnConfirmSell()
+    {
+        if (pendingCard != null)
+        {
+            float price = GetStoreBuyPrice(pendingCard);
+
+            // Remove from player, add to store, give money
+            playerInventory.RemoveCard(pendingCard.cardID);
+            storeInventory.AddCard(pendingCard.cardID);
+            playerMoney += price;
+
+            UpdateMoneyUI();
+            uiController.RefreshUI();
+        }
         CloseConfirmation();
     }
 

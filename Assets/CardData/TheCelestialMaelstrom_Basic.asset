@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 04ed7c82d5429f644a04f248f4ac9151, type: 3}
+  m_Name: TheCelestialMaelstrom_Basic
+  m_EditorClassIdentifier: Assembly-CSharp::CardData
+  cardID: CelestialMaelstrom_basic_10012025
+  cardName: The Celestial Maelstrom
+  artwork: {fileID: 21300000, guid: 1d878b3ac879f5e46b5a57df0c50b05f, type: 3}
+  rarity: 1
+  baseValue: 5
+  launchDateString: 2025-10-01
+  productionMonths: 6
+  totalPrintRun: 18000
+  currentMarketValue: 0

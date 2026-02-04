@@ -18,10 +18,17 @@ public class StorefrontUIController : MonoBehaviour
     public TextMeshProUGUI dateDisplay;
 
     [Header("Pagination Settings")]
-    public int slotsPerPage = 16;
-    public Button nextPageButton;
-    public Button prevPageButton;
+    public int slotsPerPage = 16; // Strictly enforced 4x4
+
+    [Header("Player Page Buttons")]
+    public Button playerNextButton;
+    public Button playerPrevButton;
     private int currentPlayerPage = 0;
+
+    [Header("Store Page Buttons")]
+    public Button storeNextButton;
+    public Button storePrevButton;
+    private int currentStorePage = 0;
 
     [Header("Pack Settings")]
     public List<CardPack> availablePacks = new List<CardPack>();
@@ -30,52 +37,25 @@ public class StorefrontUIController : MonoBehaviour
     public StoreManager storeManager;
     public MarketManager marketManager;
 
-    public StoreView GetCurrentView() => currentView;
-
-    // Updated view switches to reset page count
-    public void SetViewToSingles() { currentView = StoreView.Singles; RefreshUI(); }
-    public void SetViewToPacks() { currentView = StoreView.Packs; RefreshUI(); }
-
-    public void SetPlayerViewToSingles()
-    {
-        currentPlayerPage = 0;
-        currentPlayerView = PlayerView.Singles;
-        RefreshUI();
-    }
-
-    public void SetPlayerViewToPacks()
-    {
-        currentPlayerPage = 0;
-        currentPlayerView = PlayerView.Packs;
-        RefreshUI();
-    }
+    public void SetViewToSingles() { currentStorePage = 0; currentView = StoreView.Singles; RefreshUI(); }
+    public void SetViewToPacks() { currentStorePage = 0; currentView = StoreView.Packs; RefreshUI(); }
+    public void SetPlayerViewToSingles() { currentPlayerPage = 0; currentPlayerView = PlayerView.Singles; RefreshUI(); }
+    public void SetPlayerViewToPacks() { currentPlayerPage = 0; currentPlayerView = PlayerView.Packs; RefreshUI(); }
 
     void Start()
     {
-        if (storeManager != null)
-        {
-            storeManager.uiController = this;
-        }
+        if (storeManager != null) storeManager.uiController = this;
 
-        if (dateDisplay != null)
-        {
-            dateDisplay.text = System.DateTime.Now.ToString("M/d/yyyy h:mm tt");
-        }
-
-        // Initialize button listeners
-        if (nextPageButton != null) nextPageButton.onClick.AddListener(NextPage);
-        if (prevPageButton != null) prevPageButton.onClick.AddListener(PreviousPage);
+        // Initialize Listeners
+        if (playerNextButton != null) playerNextButton.onClick.AddListener(() => { currentPlayerPage++; RefreshUI(); });
+        if (playerPrevButton != null) playerPrevButton.onClick.AddListener(() => { currentPlayerPage--; RefreshUI(); });
+        if (storeNextButton != null) storeNextButton.onClick.AddListener(() => { currentStorePage++; RefreshUI(); });
+        if (storePrevButton != null) storePrevButton.onClick.AddListener(() => { currentStorePage--; RefreshUI(); });
     }
-
-    public void NextPage() { currentPlayerPage++; RefreshUI(); }
-    public void PreviousPage() { currentPlayerPage--; RefreshUI(); }
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.S))
-        {
-            ToggleStorefront();
-        }
+        if (Input.GetKeyDown(KeyCode.S)) ToggleStorefront();
     }
 
     public void ToggleStorefront()
@@ -84,98 +64,67 @@ public class StorefrontUIController : MonoBehaviour
         storefrontCanvas.SetActive(!isActive);
         if (!isActive)
         {
-            currentPlayerPage = 0; // Reset to page 1 when opening
+            currentPlayerPage = 0;
+            currentStorePage = 0;
             RefreshUI();
         }
     }
 
     public void RefreshUI()
     {
-        // Clear both grids
+        if (dateDisplay != null) dateDisplay.text = System.DateTime.Now.ToString("M/d/yyyy h:mm tt");
+
         foreach (Transform child in playerGridParent) Destroy(child.gameObject);
         foreach (Transform child in storeGridParent) Destroy(child.gameObject);
 
-        // --- PLAYER SIDE (with Pagination and Unique Slots) ---
-        List<string> playerItemsToDisplay = new List<string>();
+        // --- RENDER PLAYER SIDE ---
+        List<string> playerItems = FlattenInventory(storeManager.playerInventory, currentPlayerView == PlayerView.Singles);
+        RenderGridPage(playerItems, playerGridParent, false, currentPlayerPage, playerNextButton, playerPrevButton);
 
-        if (currentPlayerView == PlayerView.Singles)
-        {
-            // Flatten: every card instance gets an entry
-            foreach (var entry in storeManager.playerInventory.contents)
-            {
-                for (int i = 0; i < entry.Value; i++) playerItemsToDisplay.Add(entry.Key);
-            }
-        }
-        else
-        {
-            // Flatten: every pack instance gets an entry
-            foreach (var entry in storeManager.playerInventory.packContents)
-            {
-                for (int i = 0; i < entry.Value; i++) playerItemsToDisplay.Add(entry.Key);
-            }
-        }
+        // --- RENDER STORE SIDE ---
+        List<string> storeItems = FlattenInventory(storeManager.storeInventory, currentView == StoreView.Singles);
+        RenderGridPage(storeItems, storeGridParent, true, currentStorePage, storeNextButton, storePrevButton);
+    }
 
-        int totalItems = playerItemsToDisplay.Count;
-        int startIdx = currentPlayerPage * slotsPerPage;
-        int endIdx = Mathf.Min(startIdx + slotsPerPage, totalItems);
+    private List<string> FlattenInventory(CardInventory inventory, bool isSingles)
+    {
+        List<string> list = new List<string>();
+        var targetDict = isSingles ? inventory.contents : inventory.packContents;
+
+        foreach (var entry in targetDict)
+        {
+            for (int i = 0; i < entry.Value; i++) list.Add(entry.Key);
+        }
+        return list;
+    }
+
+    private void RenderGridPage(List<string> items, Transform grid, bool isStoreSide, int pageNum, Button nextBtn, Button prevBtn)
+    {
+        int startIdx = pageNum * slotsPerPage;
+        int endIdx = Mathf.Min(startIdx + slotsPerPage, items.Count);
 
         for (int i = startIdx; i < endIdx; i++)
         {
-            if (currentPlayerView == PlayerView.Singles)
+            bool isActuallySingles = isStoreSide ? (currentView == StoreView.Singles) : (currentPlayerView == PlayerView.Singles);
+
+            if (isActuallySingles)
             {
-                CreateSingleCardSlot(playerItemsToDisplay[i], playerGridParent, false);
+                CreateSingleCardSlot(items[i], grid, isStoreSide);
             }
             else
             {
-                CardPack packData = availablePacks.Find(p => p.packName == playerItemsToDisplay[i]);
+                CardPack packData = availablePacks.Find(p => p.packName == items[i]);
                 if (packData != null)
                 {
-                    GameObject go = Instantiate(cardSlotPrefab, playerGridParent);
+                    GameObject go = Instantiate(cardSlotPrefab, grid);
                     go.GetComponent<StoreCardSlot>().SetupPack(packData, storeManager);
                 }
             }
         }
 
-        UpdatePaginationButtons(totalItems);
-
-        // --- STORE SIDE ---
-        if (currentView == StoreView.Singles)
-        {
-            foreach (var entry in storeManager.storeInventory.contents)
-            {
-                // Store singles also follow unique slot rule
-                for (int i = 0; i < entry.Value; i++)
-                {
-                    CreateSingleCardSlot(entry.Key, storeGridParent, true);
-                }
-            }
-        }
-        else
-        {
-            foreach (var entry in storeManager.storeInventory.packContents)
-            {
-                CardPack packData = availablePacks.Find(p => p.packName == entry.Key);
-                if (packData != null)
-                {
-                    for (int i = 0; i < entry.Value; i++)
-                    {
-                        GameObject go = Instantiate(cardSlotPrefab, storeGridParent);
-                        go.GetComponent<StoreCardSlot>().SetupPack(packData, storeManager);
-                    }
-                }
-            }
-        }
-    }
-
-    private void UpdatePaginationButtons(int totalItems)
-    {
-        if (nextPageButton == null || prevPageButton == null) return;
-
-        // Show Next if there are more items beyond the current page
-        nextPageButton.gameObject.SetActive((currentPlayerPage + 1) * slotsPerPage < totalItems);
-
-        // Show Prev if we aren't on the first page
-        prevPageButton.gameObject.SetActive(currentPlayerPage > 0);
+        // Handle Button Visibility
+        if (nextBtn != null) nextBtn.gameObject.SetActive((pageNum + 1) * slotsPerPage < items.Count);
+        if (prevBtn != null) prevBtn.gameObject.SetActive(pageNum > 0);
     }
 
     void CreateSingleCardSlot(string cardID, Transform parent, bool isStore)
@@ -186,11 +135,5 @@ public class StorefrontUIController : MonoBehaviour
         GameObject go = Instantiate(cardSlotPrefab, parent);
         float price = isStore ? storeManager.GetStoreSellPrice(data) : storeManager.GetStoreBuyPrice(data);
         go.GetComponent<StoreCardSlot>().Setup(data, price, storeManager);
-    }
-
-    public void HideConfirmationButtons()
-    {
-        if (storeManager.confirmBuyButton != null) storeManager.confirmBuyButton.gameObject.SetActive(false);
-        if (storeManager.confirmTradeButton != null) storeManager.confirmTradeButton.gameObject.SetActive(false);
     }
 }

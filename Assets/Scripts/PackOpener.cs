@@ -26,6 +26,7 @@ public class PackOpener : MonoBehaviour
         if (storeManager.confirmBuyButton != null) storeManager.confirmBuyButton.gameObject.SetActive(false);
         if (storeManager.confirmTradeButton != null) storeManager.confirmTradeButton.gameObject.SetActive(false);
         if (storeManager.cancelButton != null) storeManager.cancelButton.gameObject.SetActive(false);
+        if (storeManager.confirmSellButton != null) storeManager.confirmSellButton.gameObject.SetActive(false);
 
         currentIndex = 0;
         revealOverlay.SetActive(true);

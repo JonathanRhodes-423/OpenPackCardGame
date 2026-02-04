@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 04ed7c82d5429f644a04f248f4ac9151, type: 3}
-  m_Name: TheCancopyRealm
+  m_Name: TheCancopyRealm_Basic
   m_EditorClassIdentifier: Assembly-CSharp::CardData
   cardID: cancopy_base_090125
   cardName: The Cancopy Realm

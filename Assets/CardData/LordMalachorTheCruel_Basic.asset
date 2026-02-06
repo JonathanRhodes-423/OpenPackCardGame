@@ -16,8 +16,8 @@ MonoBehaviour:
   cardName: Lord Malachor The Cruel
   artwork: {fileID: 21300000, guid: dc0a255cad8b6144db744f6af835c9f2, type: 3}
   rarity: 2
-  baseValue: 8
+  baseValue: 12
   launchDateString: 2025-10-31
   productionMonths: 3
   totalPrintRun: 11000
-  currentMarketValue: 7.6044126
+  currentMarketValue: 8.0064535

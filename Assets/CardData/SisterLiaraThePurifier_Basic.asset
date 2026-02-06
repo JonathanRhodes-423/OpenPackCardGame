@@ -10,14 +10,14 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 04ed7c82d5429f644a04f248f4ac9151, type: 3}
-  m_Name: VoodooMire_Basic
+  m_Name: SisterLiaraThePurifier_Basic
   m_EditorClassIdentifier: Assembly-CSharp::CardData
-  cardID: VoodooMire_basic_03012025
-  cardName: Voodoo Mire
-  artwork: {fileID: 21300000, guid: fe19c5ecffce5194d9ddf0d07ea556ee, type: 3}
+  cardID: SisterLiara_basic_02012026
+  cardName: Sister Liara The Purifier
+  artwork: {fileID: 21300000, guid: 99bb5bb8bc591674792cf25d600399d3, type: 3}
   rarity: 1
   baseValue: 7
-  launchDateString: 2025-03-01
-  productionMonths: 4
+  launchDateString: 2026-02-01
+  productionMonths: 6
   totalPrintRun: 18000
-  currentMarketValue: 7.030825
+  currentMarketValue: 7.1321335

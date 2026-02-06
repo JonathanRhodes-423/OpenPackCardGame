@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 04ed7c82d5429f644a04f248f4ac9151, type: 3}
   m_Name: FrosthurstTheIceTitan_Basic
   m_EditorClassIdentifier: Assembly-CSharp::CardData
-  cardID: frosthurst_base_060125
+  cardID: Frosthurst_basic_06012025
   cardName: Frosthurst The Ice Titan
   artwork: {fileID: 21300000, guid: 0913e28e13bde184fa905ee8f9eaccfb, type: 3}
   rarity: 4
@@ -20,4 +20,4 @@ MonoBehaviour:
   launchDateString: 2025-06-01
   productionMonths: 3
   totalPrintRun: 1000
-  currentMarketValue: 51.70285
+  currentMarketValue: 47.54909

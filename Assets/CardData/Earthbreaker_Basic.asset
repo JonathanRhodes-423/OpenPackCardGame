@@ -12,12 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 04ed7c82d5429f644a04f248f4ac9151, type: 3}
   m_Name: Earthbreaker_Basic
   m_EditorClassIdentifier: Assembly-CSharp::CardData
-  cardID: earthbreaker_base_010126
+  cardID: earthbreaker_basic_01012026
   cardName: The Earthbreaker
   artwork: {fileID: 21300000, guid: 531eb1a038e9e9d4f8aab34b0a17c905, type: 3}
   rarity: 1
-  baseValue: 5
+  baseValue: 9
   launchDateString: 2026-01-01
   productionMonths: 3
   totalPrintRun: 15000
-  currentMarketValue: 7.9011106
+  currentMarketValue: 5.174113

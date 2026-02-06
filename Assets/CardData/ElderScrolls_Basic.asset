@@ -12,12 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 04ed7c82d5429f644a04f248f4ac9151, type: 3}
   m_Name: ElderScrolls_Basic
   m_EditorClassIdentifier: Assembly-CSharp::CardData
-  cardID: elderscrolls_base_020126
+  cardID: ElderScrolls_basic_02012026
   cardName: The Elder Scrolls
   artwork: {fileID: 21300000, guid: a103f5a78e46f074fb5a5735d3705094, type: 3}
   rarity: 2
-  baseValue: 8
+  baseValue: 11
   launchDateString: 2026-02-01
   productionMonths: 2
-  totalPrintRun: 9000
-  currentMarketValue: 15.149435
+  totalPrintRun: 12000
+  currentMarketValue: 8.354874

@@ -16,8 +16,8 @@ MonoBehaviour:
   cardName: The Aerie Guardian
   artwork: {fileID: 21300000, guid: 14453b9e51763ae429fc723b2be1f3e7, type: 3}
   rarity: 4
-  baseValue: 45
+  baseValue: 50
   launchDateString: 2026-01-01
   productionMonths: 3
   totalPrintRun: 4000
-  currentMarketValue: 43.292877
+  currentMarketValue: 43.19565

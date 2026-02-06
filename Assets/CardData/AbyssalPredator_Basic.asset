@@ -16,8 +16,8 @@ MonoBehaviour:
   cardName: Abyssal Predator
   artwork: {fileID: 21300000, guid: 330ad46660bdcde4ca4ad50866426d63, type: 3}
   rarity: 2
-  baseValue: 12
-  launchDateString: 20250601
+  baseValue: 10
+  launchDateString: 2025-06-01
   productionMonths: 3
   totalPrintRun: 13000
-  currentMarketValue: 11.625379
+  currentMarketValue: 11.756812

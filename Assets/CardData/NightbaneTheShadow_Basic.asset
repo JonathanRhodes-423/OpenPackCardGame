@@ -12,12 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 04ed7c82d5429f644a04f248f4ac9151, type: 3}
   m_Name: NightbaneTheShadow_Basic
   m_EditorClassIdentifier: Assembly-CSharp::CardData
-  cardID: nightbane_base_080125
+  cardID: Nightbane_basic_08012025
   cardName: Nightbane The Shadow
   artwork: {fileID: 21300000, guid: e206d09a9b099174e83e84fa00a48a95, type: 3}
   rarity: 1
-  baseValue: 6
+  baseValue: 7
   launchDateString: 2025-08-01
   productionMonths: 6
   totalPrintRun: 18000
-  currentMarketValue: 5.8146777
+  currentMarketValue: 6.190133

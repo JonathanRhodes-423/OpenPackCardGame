@@ -12,12 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 04ed7c82d5429f644a04f248f4ac9151, type: 3}
   m_Name: GrimnakTheReaper_Basic
   m_EditorClassIdentifier: Assembly-CSharp::CardData
-  cardID: grimnak_base_080125
-  cardName: Grimnak the Reaper
+  cardID: Grimnak_basic_08012025
+  cardName: Grimnak The Reaper
   artwork: {fileID: 21300000, guid: a09f17595532f064d89ea46d1841ddc3, type: 3}
   rarity: 0
   baseValue: 2
   launchDateString: 2025-08-01
   productionMonths: 6
   totalPrintRun: 30000
-  currentMarketValue: 1.9940994
+  currentMarketValue: 2.0620494

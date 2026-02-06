@@ -16,8 +16,8 @@ MonoBehaviour:
   cardName: The Emerald Stinger
   artwork: {fileID: 21300000, guid: baadf356d3438c24f9f5fa562fc28825, type: 3}
   rarity: 3
-  baseValue: 11
+  baseValue: 18
   launchDateString: 2025-05-01
   productionMonths: 4
   totalPrintRun: 10000
-  currentMarketValue: 11.182274
+  currentMarketValue: 10.479631

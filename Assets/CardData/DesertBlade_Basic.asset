@@ -10,14 +10,14 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 04ed7c82d5429f644a04f248f4ac9151, type: 3}
-  m_Name: VoodooMire_Basic
+  m_Name: DesertBlade_Basic
   m_EditorClassIdentifier: Assembly-CSharp::CardData
-  cardID: VoodooMire_basic_03012025
-  cardName: Voodoo Mire
-  artwork: {fileID: 21300000, guid: fe19c5ecffce5194d9ddf0d07ea556ee, type: 3}
-  rarity: 1
-  baseValue: 7
-  launchDateString: 2025-03-01
-  productionMonths: 4
-  totalPrintRun: 18000
-  currentMarketValue: 7.030825
+  cardID: DesertBlade_basic_09012025
+  cardName: Desert Blade
+  artwork: {fileID: 21300000, guid: 3636de63bd0210248a4c9875fba2c2d4, type: 3}
+  rarity: 2
+  baseValue: 10
+  launchDateString: 2025-09-01
+  productionMonths: 5
+  totalPrintRun: 13000
+  currentMarketValue: 10.834069

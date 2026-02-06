@@ -12,12 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 04ed7c82d5429f644a04f248f4ac9151, type: 3}
   m_Name: RunicSentinels_Basic
   m_EditorClassIdentifier: Assembly-CSharp::CardData
-  cardID: RunicSentinels_base_07012025
-  cardName: RunicSentinels
+  cardID: RunicSentinels_basic_07012025
+  cardName: Runic Sentinels
   artwork: {fileID: 21300000, guid: fe3aac18380e1454ab2935db732b78ea, type: 3}
   rarity: 0
-  baseValue: 2
+  baseValue: 4
   launchDateString: 2025-07-01
   productionMonths: 8
   totalPrintRun: 20000
-  currentMarketValue: 0
+  currentMarketValue: 2.079972

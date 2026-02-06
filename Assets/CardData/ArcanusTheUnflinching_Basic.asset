@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 04ed7c82d5429f644a04f248f4ac9151, type: 3}
   m_Name: ArcanusTheUnflinching_Basic
   m_EditorClassIdentifier: Assembly-CSharp::CardData
-  cardID: arcanus_base_010126
+  cardID: Arcanus_basic_01012026
   cardName: Arcanus The Unflinching
   artwork: {fileID: 21300000, guid: a401046563d525d459480605a2845993, type: 3}
   rarity: 4
@@ -20,4 +20,4 @@ MonoBehaviour:
   launchDateString: 2026-01-01
   productionMonths: 3
   totalPrintRun: 5000
-  currentMarketValue: 51.326115
+  currentMarketValue: 52.317474

@@ -12,12 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 04ed7c82d5429f644a04f248f4ac9151, type: 3}
   m_Name: BloodstoneMonolith_Basic
   m_EditorClassIdentifier: Assembly-CSharp::CardData
-  cardID: bloodstone_base_110125
+  cardID: Bloodstone_basic_11012025
   cardName: The Bloodstone Monolith
   artwork: {fileID: 21300000, guid: 898969cad6f0927479cc96bf37c1d008, type: 3}
   rarity: 3
-  baseValue: 10
+  baseValue: 18
   launchDateString: 2025-11-01
   productionMonths: 3
   totalPrintRun: 10000
-  currentMarketValue: 9.655893
+  currentMarketValue: 10.261877

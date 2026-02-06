@@ -16,8 +16,8 @@ MonoBehaviour:
   cardName: The Nightmare Weaver
   artwork: {fileID: 21300000, guid: d7223b7eefe4bd646a6aff1a6e2c8a22, type: 3}
   rarity: 4
-  baseValue: 21
+  baseValue: 30
   launchDateString: 2025-10-31
   productionMonths: 3
   totalPrintRun: 6000
-  currentMarketValue: 20.983833
+  currentMarketValue: 21.480171

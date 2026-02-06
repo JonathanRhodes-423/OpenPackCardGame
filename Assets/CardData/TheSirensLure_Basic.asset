@@ -16,8 +16,8 @@ MonoBehaviour:
   cardName: The Siren's Lure
   artwork: {fileID: 21300000, guid: cc85838ca04a59747ab3bf40cfae26d7, type: 3}
   rarity: 1
-  baseValue: 4
+  baseValue: 8
   launchDateString: 2025-04-01
   productionMonths: 5
-  totalPrintRun: 22000
-  currentMarketValue: 4.0198393
+  totalPrintRun: 17000
+  currentMarketValue: 4.1133127

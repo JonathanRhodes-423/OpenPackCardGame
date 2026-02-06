@@ -12,12 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 04ed7c82d5429f644a04f248f4ac9151, type: 3}
   m_Name: BeserkerThorgrim_Basic
   m_EditorClassIdentifier: Assembly-CSharp::CardData
-  cardID: thorgrim_base_120125
+  cardID: Thorgrim_basic_12012025
   cardName: Berserker Thorgrim
   artwork: {fileID: 21300000, guid: 1097f6e113c06f94b979225ae9530c7c, type: 3}
   rarity: 0
-  baseValue: 2
+  baseValue: 4
   launchDateString: 2025-12-01
   productionMonths: 6
   totalPrintRun: 20000
-  currentMarketValue: 3.295186
+  currentMarketValue: 1.9453325

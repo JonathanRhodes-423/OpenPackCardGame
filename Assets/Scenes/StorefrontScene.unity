@@ -614,32 +614,42 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MarketManager
   allCards:
+  - {fileID: 11400000, guid: d7fe2f06b7f6fbc4fa552934d3abdb81, type: 2}
   - {fileID: 11400000, guid: 5b9d30713d31788408327178588a1529, type: 2}
   - {fileID: 11400000, guid: 2e3fb13aadd03b0408541ed0a1e8227f, type: 2}
   - {fileID: 11400000, guid: 383576ec3b17e974c8ac9de707103090, type: 2}
+  - {fileID: 11400000, guid: 7e5c90c123f63044695d51a50462ebac, type: 2}
   - {fileID: 11400000, guid: 38db128ebfe46624f81f0c5f7f2aad61, type: 2}
   - {fileID: 11400000, guid: 64504b6a59438e04194fa51d3e9494e5, type: 2}
+  - {fileID: 11400000, guid: bca0a541e40e3e54bb2dd5b767190769, type: 2}
+  - {fileID: 11400000, guid: 486a5154c5b24aa4a8c4231eb54d8a9d, type: 2}
+  - {fileID: 11400000, guid: 4676333e6d91f3b45912402982dbd46b, type: 2}
+  - {fileID: 11400000, guid: b9a4232182a46fe4ea86b9737ad009ec, type: 2}
   - {fileID: 11400000, guid: 91430c8a48a2bfc47904115d380310dd, type: 2}
   - {fileID: 11400000, guid: 0bc64e788b1bb90459cf7ef42af76604, type: 2}
-  - {fileID: 11400000, guid: afbe843ecf5d3b142af994192cdfd896, type: 2}
-  - {fileID: 11400000, guid: f6108fcca33e2a24c82c7c8a9466caf9, type: 2}
-  - {fileID: 11400000, guid: 7b846faab3f3a814a812db6ad5e33009, type: 2}
-  - {fileID: 11400000, guid: ba9964334ee3cd443b01e25745833e2f, type: 2}
-  - {fileID: 11400000, guid: 7833668c2373ac74a85f424859508cfd, type: 2}
-  - {fileID: 11400000, guid: d7fe2f06b7f6fbc4fa552934d3abdb81, type: 2}
-  - {fileID: 11400000, guid: 5964662894da94e4e89fe14454256d24, type: 2}
-  - {fileID: 11400000, guid: cd1a70fca6d802542ad7bd94edb99024, type: 2}
-  - {fileID: 11400000, guid: 486a5154c5b24aa4a8c4231eb54d8a9d, type: 2}
-  - {fileID: 11400000, guid: fbfe608a44c55404983eb1c495d6627d, type: 2}
-  - {fileID: 11400000, guid: 462d140a4a76ff947ad592db934f0fd6, type: 2}
-  - {fileID: 11400000, guid: 550f2d7c2c292d146b6bcf2d526d00c3, type: 2}
-  - {fileID: 11400000, guid: 20c570dfd9b8911438b74b87fe559354, type: 2}
-  - {fileID: 11400000, guid: 7db096f2d1203024a93ce84cc5d84d27, type: 2}
-  - {fileID: 11400000, guid: 0de725580a650ce4881409e74887440e, type: 2}
-  - {fileID: 11400000, guid: 6f00aa4d96449db4abe2cdba22e58eb9, type: 2}
-  - {fileID: 11400000, guid: b9a4232182a46fe4ea86b9737ad009ec, type: 2}
-  - {fileID: 11400000, guid: d35c3d9b6ce175f43862590a2ec5e39f, type: 2}
   - {fileID: 11400000, guid: 0a963a34fba6f7942935615c3d3e8b95, type: 2}
+  - {fileID: 11400000, guid: 3639e35d5981fed42962614f5891ca7a, type: 2}
+  - {fileID: 11400000, guid: cd1a70fca6d802542ad7bd94edb99024, type: 2}
+  - {fileID: 11400000, guid: 4448ed4e6e362574da988dc3074fc5d5, type: 2}
+  - {fileID: 11400000, guid: a99608dd2decc19478f9c8d1a510f8d4, type: 2}
+  - {fileID: 11400000, guid: b31ab86d8ddb3c54b987050bbe0a57c1, type: 2}
+  - {fileID: 11400000, guid: afbe843ecf5d3b142af994192cdfd896, type: 2}
+  - {fileID: 11400000, guid: 37744833e32a33f49a6dd090e76d4d90, type: 2}
+  - {fileID: 11400000, guid: ba9964334ee3cd443b01e25745833e2f, type: 2}
+  - {fileID: 11400000, guid: 93f7d54133ac7054cb5818f65dca803a, type: 2}
+  - {fileID: 11400000, guid: 5964662894da94e4e89fe14454256d24, type: 2}
+  - {fileID: 11400000, guid: 48a57a98802e2a442994edff8954518e, type: 2}
+  - {fileID: 11400000, guid: d35c3d9b6ce175f43862590a2ec5e39f, type: 2}
+  - {fileID: 11400000, guid: f6108fcca33e2a24c82c7c8a9466caf9, type: 2}
+  - {fileID: 11400000, guid: fbfe608a44c55404983eb1c495d6627d, type: 2}
+  - {fileID: 11400000, guid: 20c570dfd9b8911438b74b87fe559354, type: 2}
+  - {fileID: 11400000, guid: 7b846faab3f3a814a812db6ad5e33009, type: 2}
+  - {fileID: 11400000, guid: 462d140a4a76ff947ad592db934f0fd6, type: 2}
+  - {fileID: 11400000, guid: 0de725580a650ce4881409e74887440e, type: 2}
+  - {fileID: 11400000, guid: 7db096f2d1203024a93ce84cc5d84d27, type: 2}
+  - {fileID: 11400000, guid: 6f00aa4d96449db4abe2cdba22e58eb9, type: 2}
+  - {fileID: 11400000, guid: 550f2d7c2c292d146b6bcf2d526d00c3, type: 2}
+  - {fileID: 11400000, guid: 7833668c2373ac74a85f424859508cfd, type: 2}
 --- !u!4 &332695221
 Transform:
   m_ObjectHideFlags: 0
@@ -4109,8 +4119,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 787d750ab22c7fd408dbd77adf9e44cb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::StoreManager
-  playerMoney: 100
+  storeInventory:
+    cardInstances: []
+  playerInventory:
+    cardInstances: []
+  playerMoney: 30
   moneyDisplay: {fileID: 1463210357}
+  tradeCartIDs: []
   playerTradeCart: []
   tradeValueText: {fileID: 459827881}
   allowDuplicates: 1

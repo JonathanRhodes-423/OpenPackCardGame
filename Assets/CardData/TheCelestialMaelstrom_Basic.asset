@@ -16,8 +16,8 @@ MonoBehaviour:
   cardName: The Celestial Maelstrom
   artwork: {fileID: 21300000, guid: 1d878b3ac879f5e46b5a57df0c50b05f, type: 3}
   rarity: 1
-  baseValue: 5
+  baseValue: 7
   launchDateString: 2025-10-01
   productionMonths: 6
   totalPrintRun: 18000
-  currentMarketValue: 0
+  currentMarketValue: 5.0219584

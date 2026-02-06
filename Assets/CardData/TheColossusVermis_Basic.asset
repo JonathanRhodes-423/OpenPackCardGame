@@ -12,12 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 04ed7c82d5429f644a04f248f4ac9151, type: 3}
   m_Name: TheColossusVermis_Basic
   m_EditorClassIdentifier: Assembly-CSharp::CardData
-  cardID: vermis_base_070125
+  cardID: Vermis_basic_07012025
   cardName: The Colussus Vermis
   artwork: {fileID: 21300000, guid: 30f65f12c04e789469f41b57356d045e, type: 3}
   rarity: 1
   baseValue: 7
   launchDateString: 2025-07-01
   productionMonths: 6
-  totalPrintRun: 21000
-  currentMarketValue: 6.8622756
+  totalPrintRun: 18000
+  currentMarketValue: 7.031812

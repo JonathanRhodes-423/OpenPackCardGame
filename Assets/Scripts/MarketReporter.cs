@@ -24,8 +24,8 @@ public class MarketReporter : MonoBehaviour
 
             // Simulation Logic: 90% of printed cards are usually with bots/market
             int botOwned = (int)(totalPrinted * 0.9f);
-            int playerOwned = storeManager.playerInventory.contents.ContainsKey(card.cardID) ?
-                              storeManager.playerInventory.contents[card.cardID] : 0;
+            int playerOwned = PlayerManager.Instance.inventory.contents.ContainsKey(card.cardID) ?
+                              PlayerManager.Instance.inventory.contents[card.cardID] : 0;
 
             report.AppendLine($"CARD: {card.cardName} ({card.cardID})");
             report.AppendLine($"- Rarity: {card.rarity}");

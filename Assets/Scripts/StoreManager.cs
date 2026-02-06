@@ -6,18 +6,18 @@ using UnityEngine.UI;
 public class StoreManager : MonoBehaviour
 {
     public CardInventory storeInventory = new CardInventory();
-    public CardInventory playerInventory = new CardInventory();
 
-    [Header("Player Economy")]
-    public float playerMoney = 1000f;
+    [Header("UI Displays")]
     public TextMeshProUGUI moneyDisplay;
-
-    [Header("Trade System")]
-    // We need both: one for the card logic, one for the UI slot logic
-    public List<string> tradeCartIDs = new List<string>();
-    public List<StoreCardSlot> playerTradeCart = new List<StoreCardSlot>();
     public TextMeshProUGUI tradeValueText;
-    private float aggregateTradeValue = 0f;
+
+    [Header("NPC State (For UI Only)")]
+    public bool isNPCTrade = false;
+    // Note: npcInteractionPanel and npcOpenCardPanel are now handled primarily by NPCManager, 
+    // but kept here if your UI animations or toggles still reference them.
+    public GameObject npcInteractionPanel;
+    public Transform npcGridParent;
+    public GameObject npcOpenCardPanel;
 
     [Header("Market Settings")]
     public bool allowDuplicates = true;
@@ -29,17 +29,22 @@ public class StoreManager : MonoBehaviour
     public MarketManager marketManager;
     [HideInInspector] public StorefrontUIController uiController;
 
-    private StoreCardSlot selectedPlayerCard;
-    private StoreCardSlot selectedStoreCard;
+    [Header("Trade System")]
+    public List<string> tradeCartIDs = new List<string>();
+    public List<StoreCardSlot> playerTradeCart = new List<StoreCardSlot>();
+    private float aggregateTradeValue = 0f;
 
     [Header("Confirmation UI")]
     public GameObject openCardPanel;
-    public StoreCardSlot previewSlot;
+    public Image previewImage; // REPLACED: Drag a UI Image here instead of StoreCardSlot
+    public TextMeshProUGUI previewPriceText; // Optional: Drag a text component for the price
     public Button confirmBuyButton;
     public Button confirmTradeButton;
     public Button cancelButton;
     public Button confirmSellButton;
 
+    private StoreCardSlot selectedPlayerCard;
+    private StoreCardSlot selectedStoreCard;
     private CardData pendingCard;
     private CardPack pendingPack;
 
@@ -58,6 +63,19 @@ public class StoreManager : MonoBehaviour
                 Debug.LogError("StoreManager: Warehouse Instance is missing!");
             }
         }
+    }
+
+    // --- STORE LOGIC ---
+
+    public void OpenMainStore()
+    {
+        isNPCTrade = false;
+        // Close NPC specific panels if they were open
+        if (npcInteractionPanel != null) npcInteractionPanel.SetActive(false);
+        if (npcOpenCardPanel != null) npcOpenCardPanel.SetActive(false);
+
+        ClearTradeCart();
+        if (uiController != null) uiController.RefreshUI();
     }
 
     public void ReceiveSundayShipment()
@@ -86,26 +104,28 @@ public class StoreManager : MonoBehaviour
     public float GetStoreSellPrice(CardData card) => card.currentMarketValue * storeMarkup;
     public float GetStoreBuyPrice(CardData card) => card.currentMarketValue * storeMarkdown;
 
+    // --- SELECTION LOGIC ---
+
     public void HandleCardSelection(StoreCardSlot slot)
     {
-        if (uiController == null) uiController = Object.FindAnyObjectByType<StorefrontUIController>();
         bool isStoreSlot = slot.transform.IsChildOf(uiController.storeGridParent);
 
-        if (isStoreSlot)
+        if (!string.IsNullOrEmpty(slot.packName))
         {
-            ShowStoreConfirmation(slot);
-        }
-        else
-        {
-            if (!string.IsNullOrEmpty(slot.packName))
+            if (isStoreSlot)
             {
-                CardPack pack = uiController.availablePacks.Find(p => p.packName == slot.packName);
-                if (pack != null) OpenPack(pack);
+                ShowStoreConfirmation(slot);
             }
             else
             {
-                ShowPlayerCardConfirmation(slot);
+                // OPEN PACK: This calls StartPackOpening which now cleans the panel
+                OpenPack(uiController.availablePacks.Find(p => p.packName == slot.packName));
             }
+        }
+        else
+        {
+            if (isStoreSlot) ShowStoreConfirmation(slot);
+            else ShowPlayerCardConfirmation(slot);
         }
     }
 
@@ -113,15 +133,19 @@ public class StoreManager : MonoBehaviour
     {
         openCardPanel.SetActive(true);
 
-        if (previewSlot != null) previewSlot.gameObject.SetActive(true);
+        // CHANGE: Use previewImage.gameObject instead of previewSlot
+        if (previewImage != null) previewImage.gameObject.SetActive(true);
 
-        previewSlot.transform.localScale = new Vector3(30f, 30f, 1f);
+        // CHANGE: No .transform.localScale needed for a UI Image usually, 
+        // but if you want to reset it:
+        if (previewImage != null) previewImage.rectTransform.localScale = Vector3.one;
+
         pendingCard = slot.cardData;
         pendingPack = null;
         selectedPlayerCard = slot;
 
-        float sellPrice = GetStoreBuyPrice(pendingCard);
-        previewSlot.Setup(pendingCard, sellPrice, this);
+        // CHANGE: Assign sprite directly
+        if (previewImage != null) previewImage.sprite = pendingCard.artwork;
 
         confirmBuyButton.gameObject.SetActive(false);
         confirmTradeButton.gameObject.SetActive(true);
@@ -133,30 +157,49 @@ public class StoreManager : MonoBehaviour
     {
         openCardPanel.SetActive(true);
 
-        if (previewSlot != null) previewSlot.gameObject.SetActive(true);
-
-        previewSlot.transform.localScale = new Vector3(30f, 30f, 1f);
-        if (cancelButton != null) cancelButton.gameObject.SetActive(true);
-        confirmSellButton.gameObject.SetActive(false);
-
+        // 1. HANDLE PACK VS CARD
         if (!string.IsNullOrEmpty(slot.packName))
         {
             pendingPack = uiController.availablePacks.Find(p => p.packName == slot.packName);
             pendingCard = null;
-            previewSlot.SetupPack(pendingPack, this);
+
+            if (previewImage != null)
+            {
+                previewImage.gameObject.SetActive(true); // Safety: ensure image object is on
+                previewImage.sprite = pendingPack.packArt;
+            }
+
+            if (previewPriceText != null)
+                previewPriceText.text = $"Pack Cost: ${pendingPack.cost:N0}";
+
             confirmBuyButton.gameObject.SetActive(true);
-            if (confirmTradeButton != null) confirmTradeButton.gameObject.SetActive(false);
+            confirmTradeButton.gameObject.SetActive(false);
         }
         else
         {
             pendingCard = slot.cardData;
             pendingPack = null;
             selectedStoreCard = slot;
-            previewSlot.Setup(pendingCard, GetStoreSellPrice(pendingCard), this);
+
+            if (previewImage != null)
+            {
+                previewImage.gameObject.SetActive(true); // Safety: ensure image object is on
+                previewImage.sprite = pendingCard.artwork;
+            }
+
+            if (previewPriceText != null)
+                previewPriceText.text = $"Store Price: ${GetStoreSellPrice(pendingCard):N0}";
+
             confirmBuyButton.gameObject.SetActive(true);
-            if (confirmTradeButton != null) confirmTradeButton.gameObject.SetActive(true);
+            confirmTradeButton.gameObject.SetActive(true);
         }
+
+        // Always hide Sell button when looking at store items
+        confirmSellButton.gameObject.SetActive(false);
+        cancelButton.gameObject.SetActive(true);
     }
+
+    // --- TRANSACTION LOGIC ---
 
     public void OnConfirmBuy()
     {
@@ -171,27 +214,19 @@ public class StoreManager : MonoBehaviour
         {
             float price = GetStoreBuyPrice(pendingCard);
 
-            // 1. ADD MONEY TO PLAYER
-            playerMoney += price;
-
-            // 2. ADD GENERIC CARD TO STORE INVENTORY
+            PlayerManager.Instance.AddMoney(price);
             storeInventory.AddCard(pendingCard.cardID);
 
-            // 3. REMOVE UNIQUE INSTANCE FROM PLAYER INVENTORY
-            // We look for the instance currently selected in the grid (selectedPlayerCard)
             if (selectedPlayerCard != null && !string.IsNullOrEmpty(selectedPlayerCard.instanceID))
             {
-                playerInventory.RemoveCardInstance(selectedPlayerCard.instanceID);
+                PlayerManager.Instance.inventory.RemoveCardInstance(selectedPlayerCard.instanceID);
             }
             else
             {
-                // Fallback: If for some reason the slot reference is lost, 
-                // find the first instance matching this card type and remove it.
-                var inst = playerInventory.cardInstances.Find(c => c.masterData.cardID == pendingCard.cardID);
-                if (inst != null) playerInventory.RemoveCardInstance(inst.instanceID);
+                var inst = PlayerManager.Instance.inventory.cardInstances.Find(c => c.masterData.cardID == pendingCard.cardID);
+                if (inst != null) PlayerManager.Instance.inventory.RemoveCardInstance(inst.instanceID);
             }
 
-            // 4. UI FEEDBACK
             UpdateMoneyUI();
             uiController.RefreshUI();
         }
@@ -204,12 +239,9 @@ public class StoreManager : MonoBehaviour
 
         if (pendingCard != null)
         {
-            // Use the reference to selectedStoreCard we set in ShowStoreConfirmation
             bool isStoreCard = selectedStoreCard != null && pendingCard == selectedStoreCard.cardData;
-
             if (isStoreCard)
             {
-                // IMPORTANT: Only call ExecuteTrade here, NOT PurchaseSingle
                 ExecuteTrade(pendingCard);
             }
             else if (selectedPlayerCard != null)
@@ -222,42 +254,32 @@ public class StoreManager : MonoBehaviour
 
     private void AddToTradeCart(StoreCardSlot slot)
     {
-        // Ensure we are tracking the unique instance fingerprint
         if (!tradeCartIDs.Contains(slot.instanceID))
         {
             tradeCartIDs.Add(slot.instanceID);
-            playerTradeCart.Add(slot); // Keep reference for the visual border
-
+            playerTradeCart.Add(slot);
             slot.SetSelectionActive(true);
 
-            // Activate UI text and force a calculation update
             if (tradeValueText != null)
             {
                 tradeValueText.gameObject.SetActive(true);
-                CalculateAggregateValue(); // Recalculate based on current IDs
+                CalculateAggregateValue();
             }
-
-            Debug.Log($"Added {slot.cardData.cardName} to trade. New Total: {aggregateTradeValue}");
         }
     }
 
     public void CalculateAggregateValue()
     {
         aggregateTradeValue = 0f;
-
-        // Loop through every unique card instance selected for trade
         foreach (string uid in tradeCartIDs)
         {
-            // Find the instance in the player's inventory to get its master data (price)
-            CardInstance inst = playerInventory.cardInstances.Find(c => c.instanceID == uid);
+            CardInstance inst = PlayerManager.Instance.inventory.cardInstances.Find(c => c.instanceID == uid);
             if (inst != null)
             {
-                // Use the markdown price (what the store buys it for)
                 aggregateTradeValue += GetStoreBuyPrice(inst.masterData);
             }
         }
 
-        // Update the UI text display
         if (tradeValueText != null)
         {
             tradeValueText.text = $"Trade Value: ${aggregateTradeValue:N0}";
@@ -268,40 +290,36 @@ public class StoreManager : MonoBehaviour
     {
         if (tradeCartIDs.Count == 0) return;
 
-        // Ensure value is fresh before math
         CalculateAggregateValue();
+        float targetCost = GetStoreSellPrice(storeCard);
+        float difference = aggregateTradeValue - targetCost;
 
-        float storeCardCost = GetStoreSellPrice(storeCard);
-
-        // Math: (Sum of my cards) - (Cost of store card)
-        // If I give $10 of cards for a $7 store card, difference is +$3 (Store pays me)
-        // If I give $5 of cards for a $7 store card, difference is -$2 (I pay store)
-        float difference = aggregateTradeValue - storeCardCost;
-
-        if (difference < 0 && playerMoney < Mathf.Abs(difference))
+        // Store Rule: Check if player can pay the deficit
+        if (difference < 0)
         {
-            Debug.LogWarning("Insufficient funds to cover the trade gap.");
-            return;
+            if (!PlayerManager.Instance.SpendMoney(Mathf.Abs(difference)))
+            {
+                Debug.LogWarning("Store: Insufficient funds for trade deficit.");
+                return;
+            }
+            difference = 0;
         }
 
-        // Process the balance
-        playerMoney += difference;
+        PlayerManager.Instance.AddMoney(difference);
 
-        // INVENTORY SWAP
         foreach (string uid in tradeCartIDs)
         {
-            CardInstance inst = playerInventory.cardInstances.Find(c => c.instanceID == uid);
+            CardInstance inst = PlayerManager.Instance.inventory.cardInstances.Find(c => c.instanceID == uid);
             if (inst != null)
             {
                 storeInventory.AddCard(inst.masterData.cardID);
-                playerInventory.RemoveCardInstance(uid);
+                PlayerManager.Instance.inventory.RemoveCardInstance(uid);
             }
         }
 
         storeInventory.RemoveCard(storeCard.cardID);
-        playerInventory.AddCardInstance(storeCard, "TRADE", 0);
+        PlayerManager.Instance.inventory.AddCardInstance(storeCard, "STORE_TRADE", 0);
 
-        // CLEANUP
         ClearTradeCart();
         UpdateMoneyUI();
         uiController.RefreshUI();
@@ -315,29 +333,26 @@ public class StoreManager : MonoBehaviour
         if (tradeValueText != null) tradeValueText.gameObject.SetActive(false);
     }
 
-    public void ResetTrade() => ClearTradeCart();
-
     public void CloseConfirmation()
     {
         openCardPanel.SetActive(false);
-
-        // Wipe all temporary references
         pendingCard = null;
         pendingPack = null;
-        selectedStoreCard = null;
-        selectedPlayerCard = null;
 
-        // Reset the preview slot visibility for next time
-        if (previewSlot != null) previewSlot.gameObject.SetActive(false);
+        // CHANGE: Deactivate the image instead of the slot
+        if (previewImage != null)
+        {
+            previewImage.gameObject.SetActive(false);
+            previewImage.sprite = null; // Clear it so it doesn't flicker next time
+        }
     }
 
     public void PurchasePack(CardPack pack)
     {
-        if (storeInventory.packContents.ContainsKey(pack.packName) && playerMoney >= pack.cost)
+        if (storeInventory.packContents.ContainsKey(pack.packName) && PlayerManager.Instance.SpendMoney(pack.cost))
         {
-            playerMoney -= pack.cost;
             storeInventory.RemovePack(pack.packName);
-            playerInventory.AddPack(pack.packName);
+            PlayerManager.Instance.inventory.AddPack(pack.packName);
             UpdateMoneyUI();
             if (uiController != null) uiController.RefreshUI();
         }
@@ -346,24 +361,30 @@ public class StoreManager : MonoBehaviour
     public void PurchaseSingle(CardData card)
     {
         float price = GetStoreSellPrice(card);
-        if (playerMoney >= price && storeInventory.contents.ContainsKey(card.cardID))
+        if (storeInventory.contents.ContainsKey(card.cardID) && PlayerManager.Instance.SpendMoney(price))
         {
-            playerMoney -= price;
             storeInventory.RemoveCard(card.cardID);
-            playerInventory.AddCard(card.cardID);
+            PlayerManager.Instance.inventory.AddCardInstance(card, "SINGLE", 0);
             UpdateMoneyUI();
-            uiController.RefreshUI();
+            if (uiController != null) uiController.RefreshUI();
         }
     }
 
     public void UpdateMoneyUI()
     {
-        if (moneyDisplay != null) moneyDisplay.text = $"${playerMoney:N0}";
+        if (moneyDisplay != null) moneyDisplay.text = $"${PlayerManager.Instance.money:N0}";
     }
 
     private void OpenPack(CardPack pack)
     {
         PackOpener opener = Object.FindAnyObjectByType<PackOpener>();
-        if (opener != null) opener.StartPackOpening(pack);
+        if (opener != null)
+        {
+            opener.StartPackOpening(pack);
+        }
+        else
+        {
+            Debug.LogError("StoreManager: No PackOpener found in scene!");
+        }
     }
 }

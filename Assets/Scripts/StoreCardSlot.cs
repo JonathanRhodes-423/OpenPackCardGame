@@ -51,7 +51,19 @@ public class StoreCardSlot : MonoBehaviour
 
     public void OnSlotClicked()
     {
-        storeManager.HandleCardSelection(this);
+        Canvas parentCanvas = GetComponentInParent<Canvas>();
+
+        if (parentCanvas != null && parentCanvas.gameObject.name.Contains("NPC"))
+        {
+            // Talk to NPC Manager instead of Store
+            NPCManager npcMan = UnityEngine.Object.FindAnyObjectByType<NPCManager>();
+            // We handle the specific logic inside NPCManager listeners now
+        }
+        else
+        {
+            // Standard Store logic
+            storeManager.HandleCardSelection(this);
+        }
     }
 
     public void SetSelectionActive(bool isActive)

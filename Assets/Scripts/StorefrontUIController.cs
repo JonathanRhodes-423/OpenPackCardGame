@@ -37,12 +37,13 @@ public class StorefrontUIController : MonoBehaviour
     public StoreManager storeManager;
     public MarketManager marketManager;
 
-    // These methods should be called by your Tab Buttons in the Inspector
+    // --- VIEW TOGGLES ---
     public void SetViewToSingles() { currentStorePage = 0; currentView = StoreView.Singles; RefreshUI(); }
     public void SetViewToPacks() { currentStorePage = 0; currentView = StoreView.Packs; RefreshUI(); }
+
     public void SetPlayerViewToSingles()
     {
-        storeManager.ClearTradeCart(); // Clear when changing view type
+        storeManager.ClearTradeCart();
         currentPlayerPage = 0;
         currentPlayerView = PlayerView.Singles;
         RefreshUI();
@@ -53,6 +54,7 @@ public class StorefrontUIController : MonoBehaviour
     {
         if (storeManager != null) storeManager.uiController = this;
 
+        // Pagination Listeners
         if (playerNextButton != null) playerNextButton.onClick.AddListener(() => { currentPlayerPage++; RefreshUI(); });
         if (playerPrevButton != null) playerPrevButton.onClick.AddListener(() => { currentPlayerPage--; RefreshUI(); });
         if (storeNextButton != null) storeNextButton.onClick.AddListener(() => { currentStorePage++; RefreshUI(); });
@@ -72,6 +74,7 @@ public class StorefrontUIController : MonoBehaviour
         {
             currentPlayerPage = 0;
             currentStorePage = 0;
+            // Always refresh from PlayerManager source on open
             RefreshUI();
         }
     }
@@ -80,14 +83,15 @@ public class StorefrontUIController : MonoBehaviour
     {
         if (dateDisplay != null) dateDisplay.text = System.DateTime.Now.ToString("M/d/yyyy h:mm tt");
 
+        // Clear existing slots
         foreach (Transform child in playerGridParent) Destroy(child.gameObject);
         foreach (Transform child in storeGridParent) Destroy(child.gameObject);
 
-        // --- RENDER PLAYER SIDE ---
-        List<string> playerItems = FlattenInventory(storeManager.playerInventory, currentPlayerView == PlayerView.Singles, true);
+        // --- RENDER PLAYER SIDE (Refactored to PlayerManager) ---
+        List<string> playerItems = FlattenInventory(PlayerManager.Instance.inventory, currentPlayerView == PlayerView.Singles, true);
         RenderGridPage(playerItems, playerGridParent, false, currentPlayerPage, playerNextButton, playerPrevButton);
 
-        // --- RENDER STORE SIDE ---
+        // --- RENDER STORE SIDE (Uses StoreManager's unique storeInventory) ---
         List<string> storeItems = FlattenInventory(storeManager.storeInventory, currentView == StoreView.Singles, false);
         RenderGridPage(storeItems, storeGridParent, true, currentStorePage, storeNextButton, storePrevButton);
     }
@@ -130,6 +134,8 @@ public class StorefrontUIController : MonoBehaviour
                 if (packData != null)
                 {
                     GameObject go = Instantiate(cardSlotPrefab, grid);
+                    go.transform.localScale = Vector3.one;
+                    go.SetActive(true);
                     go.GetComponent<StoreCardSlot>().SetupPack(packData, storeManager);
                 }
             }
@@ -139,32 +145,38 @@ public class StorefrontUIController : MonoBehaviour
         if (prevBtn != null) prevBtn.gameObject.SetActive(pageNum > 0);
     }
 
-    void CreateSingleCardSlot(string idOrUid, Transform parent, bool isStore)
+    private void CreateSingleCardSlot(string itemID, Transform grid, bool isStoreSide)
     {
-        CardData data = null;
-        string finalUid = "";
+        GameObject go = Instantiate(cardSlotPrefab, grid);
+        go.transform.localScale = Vector3.one;
+        go.transform.localPosition = Vector3.zero;
+        go.SetActive(true);
 
-        if (isStore)
+        StoreCardSlot slot = go.GetComponent<StoreCardSlot>();
+
+        if (!isStoreSide)
         {
-            data = marketManager.allCards.Find(c => c.cardID == idOrUid);
+            // PULL FROM PLAYERMANAGER: Find unique instance by ID
+            CardInstance inst = PlayerManager.Instance.inventory.cardInstances.Find(c => c.instanceID == itemID);
+            if (inst != null)
+            {
+                slot.Setup(inst.masterData, storeManager.GetStoreBuyPrice(inst.masterData), storeManager);
+                slot.instanceID = inst.instanceID;
+
+                if (storeManager.tradeCartIDs.Contains(inst.instanceID))
+                {
+                    slot.SetSelectionActive(true);
+                }
+            }
         }
         else
         {
-            CardInstance inst = storeManager.playerInventory.cardInstances.Find(c => c.instanceID == idOrUid);
-            if (inst != null) { data = inst.masterData; finalUid = inst.instanceID; }
-        }
-
-        if (data == null) return;
-
-        GameObject go = Instantiate(cardSlotPrefab, parent);
-        StoreCardSlot slot = go.GetComponent<StoreCardSlot>();
-        float price = isStore ? storeManager.GetStoreSellPrice(data) : storeManager.GetStoreBuyPrice(data);
-        slot.Setup(data, price, storeManager);
-
-        if (!isStore)
-        {
-            slot.instanceID = finalUid;
-            if (storeManager.tradeCartIDs.Contains(finalUid)) slot.SetSelectionActive(true);
+            // PULL FROM STOREMANAGER: Find master data by ID
+            CardData data = storeManager.marketManager.allCards.Find(c => c.cardID == itemID);
+            if (data != null)
+            {
+                slot.Setup(data, storeManager.GetStoreSellPrice(data), storeManager);
+            }
         }
     }
 }

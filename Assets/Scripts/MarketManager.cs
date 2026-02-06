@@ -5,6 +5,21 @@ public class MarketManager : MonoBehaviour
 {
     public List<CardData> allCards = new List<CardData>();
 
+    public static MarketManager Instance { get; private set; }
+
+    private void Awake()
+    {
+        // If there's an instance, and it's not me, delete myself.
+        if (Instance != null && Instance != this)
+        {
+            Destroy(this);
+        }
+        else
+        {
+            Instance = this;
+        }
+    }
+
     // Pack prices are static, but cards are dynamic
     public float CalculateDynamicPrice(CardData card)
     {

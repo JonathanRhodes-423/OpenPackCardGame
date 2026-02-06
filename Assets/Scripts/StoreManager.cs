@@ -170,9 +170,28 @@ public class StoreManager : MonoBehaviour
         if (pendingCard != null)
         {
             float price = GetStoreBuyPrice(pendingCard);
-            playerInventory.RemoveCard(pendingCard.cardID);
-            storeInventory.AddCard(pendingCard.cardID);
+
+            // 1. ADD MONEY TO PLAYER
             playerMoney += price;
+
+            // 2. ADD GENERIC CARD TO STORE INVENTORY
+            storeInventory.AddCard(pendingCard.cardID);
+
+            // 3. REMOVE UNIQUE INSTANCE FROM PLAYER INVENTORY
+            // We look for the instance currently selected in the grid (selectedPlayerCard)
+            if (selectedPlayerCard != null && !string.IsNullOrEmpty(selectedPlayerCard.instanceID))
+            {
+                playerInventory.RemoveCardInstance(selectedPlayerCard.instanceID);
+            }
+            else
+            {
+                // Fallback: If for some reason the slot reference is lost, 
+                // find the first instance matching this card type and remove it.
+                var inst = playerInventory.cardInstances.Find(c => c.masterData.cardID == pendingCard.cardID);
+                if (inst != null) playerInventory.RemoveCardInstance(inst.instanceID);
+            }
+
+            // 4. UI FEEDBACK
             UpdateMoneyUI();
             uiController.RefreshUI();
         }

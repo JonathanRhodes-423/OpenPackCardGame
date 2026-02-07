@@ -8,6 +8,7 @@ public struct BotData
 {
     public int botID;
     public float budget;
+    public float markup; // Added to store individual bot markup
     public BotArchetype archetype;
-    public List<string> inventoryCardIDs; // Cards owned by this specific bot
+    public List<string> inventoryCardIDs;
 }

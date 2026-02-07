@@ -170,7 +170,7 @@ public class StoreManager : MonoBehaviour
             }
 
             if (previewPriceText != null)
-                previewPriceText.text = $"Pack Cost: ${pendingPack.cost:N0}";
+                previewPriceText.text = $"${pendingPack.cost:N0}";
 
             confirmBuyButton.gameObject.SetActive(true);
             confirmTradeButton.gameObject.SetActive(false);
@@ -188,7 +188,7 @@ public class StoreManager : MonoBehaviour
             }
 
             if (previewPriceText != null)
-                previewPriceText.text = $"Store Price: ${GetStoreSellPrice(pendingCard):N0}";
+                previewPriceText.text = $"${GetStoreSellPrice(pendingCard):N0}";
 
             confirmBuyButton.gameObject.SetActive(true);
             confirmTradeButton.gameObject.SetActive(true);

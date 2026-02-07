@@ -182,6 +182,10 @@ public class NPCManager : MonoBehaviour
         tradeButton.gameObject.SetActive(true); // Trade is visible in both contexts
         cancelButton.gameObject.SetActive(true);
 
+        buyButton.onClick.RemoveAllListeners();
+        sellButton.onClick.RemoveAllListeners();
+        tradeButton.onClick.RemoveAllListeners();
+
         if (isPlayerCard)
         {
             // PLAYER CARD CONTEXT: Player wants to Sell or Trade their own card
@@ -191,7 +195,6 @@ public class NPCManager : MonoBehaviour
                 offerPriceText.text = $"Sell Value: ${pendingCard.currentMarketValue:N0}";
 
             // Link the Sell button to the new selling logic
-            sellButton.onClick.RemoveAllListeners();
             sellButton.onClick.AddListener(() => OnConfirmSellToNPC(slot.instanceID));
         }
         else
@@ -203,7 +206,6 @@ public class NPCManager : MonoBehaviour
                 offerPriceText.text = $"Cost: ${(pendingCard.currentMarketValue * npcMarkup):N0}";
 
             // Trade button on an NPC card executes the full cart swap
-            tradeButton.onClick.RemoveAllListeners();
             tradeButton.onClick.AddListener(() => OnConfirmTrade());
         }
     }
@@ -228,30 +230,38 @@ public class NPCManager : MonoBehaviour
 
     public void OnConfirmSellToNPC(string playerCardUID)
     {
+        // Safety: If pendingCard is null, the sale already happened!
         if (pendingCard == null) return;
 
-        float price = pendingCard.currentMarketValue; // Bots buy at market value
+        float price = pendingCard.currentMarketValue;
 
-        // Check if bot can afford it (Optional, using your BotData budget)
         if (currentBot.budget >= price)
         {
-            // 1. Transaction
+            // 1. LOCK THE TRANSACTION
+            // Store the data in a local variable, then clear pendingCard
+            CardData soldCard = pendingCard;
+            pendingCard = null;
+
+            // 2. Transaction (NPC pays Player)
             PlayerManager.Instance.AddMoney(price);
             currentBot.budget -= price;
 
-            // 2. Inventory Swap
+            // 3. Inventory Swap
             PlayerManager.Instance.inventory.RemoveCardInstance(playerCardUID);
-            currentBot.inventoryCardIDs.Add(pendingCard.cardID);
+            currentBot.inventoryCardIDs.Add(soldCard.cardID); // Use local variable
 
-            // 3. Cleanup
+            // 4. Cleanup
             npcOfferPanel.SetActive(false);
             RefreshPlayerInventory();
             UpdateWalletUI();
+
+            // Ensure the bot list refreshes with the new card and lower budget
             OpenNPCInventory(currentBot);
+
             storeManager.UpdateMoneyUI();
             storeManager.uiController.RefreshUI();
 
-            Debug.Log($"Sold {pendingCard.cardName} to Bot #{currentBot.botID}");
+            Debug.Log($"Sold {soldCard.cardName} to Bot #{currentBot.botID}");
         }
         else
         {

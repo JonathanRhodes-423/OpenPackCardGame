@@ -30,10 +30,16 @@ public class CardInventory
         cardInstances.Add(new CardInstance(data, packID, index));
     }
 
-    // Used for specific trade removal
     public void RemoveCardInstance(string uid)
     {
-        cardInstances.RemoveAll(c => c.instanceID == uid);
+        // Find the specific instance in the list
+        CardInstance toRemove = cardInstances.Find(c => c.instanceID == uid);
+
+        if (toRemove != null)
+        {
+            // .Remove() only deletes the specific reference found
+            cardInstances.Remove(toRemove);
+        }
     }
 
     // Store logic (Generic ID counts)

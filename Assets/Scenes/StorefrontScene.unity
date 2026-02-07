@@ -3043,10 +3043,10 @@ RectTransform:
   - {fileID: 1322684831}
   - {fileID: 423387247}
   - {fileID: 1108538138}
-  - {fileID: 1751673455}
   - {fileID: 2036567892}
   - {fileID: 1223721952}
   - {fileID: 1752094046}
+  - {fileID: 1751673455}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -4650,19 +4650,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1084369916}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 254263665}
-        m_TargetAssemblyTypeName: NPCManager, Assembly-CSharp
-        m_MethodName: OnConfirmBuy
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &1084369916
 MonoBehaviour:
   m_ObjectHideFlags: 0
